@@ -23,6 +23,10 @@ public class Tags {
     @Column(name = "slug")
     private String slug;
 
+    @ManyToOne
+    @JoinColumn(name = "news_id", referencedColumnName = "id")
+    private News owner;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
-    List<Event> findAllByTimeAndDateContains(String month);
+    //List<Event> findAllByTimeAndDateContains(String month);
 }

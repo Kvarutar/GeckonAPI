@@ -1,7 +1,7 @@
 package ru.voronchikhin.geckon.models;
 
-import jakarta.persistence.*;
-import lombok.*;
+        import jakarta.persistence.*;
+        import lombok.*;
 
 @Entity
 @Table(name = "news_content")
@@ -24,4 +24,15 @@ public class NewsContent {
 
     @Column(name = "url")
     private String url;
+
+    @ManyToOne
+    @JoinColumn(name = "news_id", referencedColumnName = "id")
+    private News owner;
+
+    public NewsContent(String type, String text, String url, News owner){
+        this.type = type;
+        this.text = text;
+        this.url = url;
+        this.owner = owner;
+    }
 }

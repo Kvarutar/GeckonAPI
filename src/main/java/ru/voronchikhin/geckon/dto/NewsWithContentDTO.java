@@ -8,12 +8,11 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
-
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewsDTO {
+public class NewsWithContentDTO {
     private int id;
     @NotBlank
     private String author;
@@ -28,6 +27,5 @@ public class NewsDTO {
     private String mainUrl;
     @NotBlank
     private String slug;
-    //private List<NewsContentDTO> contentDTOList;
-
+    private List<NewsContentDTO> contentDTOList;
 }
