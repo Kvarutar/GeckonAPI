@@ -27,5 +27,6 @@ public class NewsWithContentDTO {
     private String mainUrl;
     @NotBlank
     private String slug;
-    private List<NewsContentDTO> contentDTOList;
+    private List<NewsContentDTO> content;
+    private List<TagsDTO> tags;
 }

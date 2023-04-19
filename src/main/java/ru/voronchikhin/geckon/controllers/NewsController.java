@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.voronchikhin.geckon.dto.NewsDTO;
 import ru.voronchikhin.geckon.dto.NewsWithContentDTO;
-import ru.voronchikhin.geckon.models.News;
 import ru.voronchikhin.geckon.services.NewsService;
 
 import java.util.List;
@@ -31,11 +30,6 @@ public class NewsController {
         return newsService.findPagination(page, newsPerPage, theme);
     }
 
-    /*@GetMapping("/{id}")
-    public NewsWithContentDTO getById(@PathVariable("id") int id){
-        return newsService.findById(id);
-    }*/
-
     @GetMapping("/{slug}")
     public NewsWithContentDTO getBySlug(@PathVariable("slug") String slug){
         return newsService.findBySlug(slug);
@@ -45,6 +39,13 @@ public class NewsController {
     @PostMapping("/new")
     public ResponseEntity<HttpStatus> create(@RequestBody NewsWithContentDTO newsWithContentDTO){
         newsService.save(newsWithContentDTO);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PostMapping("/{slug}")
+    public ResponseEntity<HttpStatus> delete(@PathVariable("slug") String slug) {
+        newsService.delete(slug);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

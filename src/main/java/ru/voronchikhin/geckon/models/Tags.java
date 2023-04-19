@@ -3,7 +3,9 @@ package ru.voronchikhin.geckon.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tags")
@@ -23,9 +25,14 @@ public class Tags {
     @Column(name = "slug")
     private String slug;
 
-    @ManyToOne
-    @JoinColumn(name = "news_id", referencedColumnName = "id")
-    private News owner;
+    @ManyToMany(mappedBy = "tagsList")
+    @ToString.Exclude
+    private Set<News> owner;
+
+    public Tags(String name, String slug) {
+        this.name = name;
+        this.slug = slug;
+    }
 
     @Override
     public boolean equals(Object o) {

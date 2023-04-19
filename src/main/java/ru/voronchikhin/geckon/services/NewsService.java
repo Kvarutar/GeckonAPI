@@ -6,21 +6,26 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.voronchikhin.geckon.dto.NewsContentDTO;
 import ru.voronchikhin.geckon.dto.NewsDTO;
 import ru.voronchikhin.geckon.dto.NewsWithContentDTO;
+import ru.voronchikhin.geckon.dto.TagsDTO;
 import ru.voronchikhin.geckon.models.News;
 import ru.voronchikhin.geckon.models.NewsContent;
+import ru.voronchikhin.geckon.models.Tags;
 import ru.voronchikhin.geckon.repositories.NewsRepository;
+import ru.voronchikhin.geckon.repositories.TagsRepository;
+import ru.voronchikhin.geckon.util.NewsAddingException;
+import ru.voronchikhin.geckon.util.NewsDeletingException;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
 public class NewsService {
     private final NewsRepository newsRepository;
+    private final TagsRepository tagsRepository;
 
-    public NewsService(NewsRepository newsRepository) {
+    public NewsService(NewsRepository newsRepository, TagsRepository tagsRepository) {
         this.newsRepository = newsRepository;
+        this.tagsRepository = tagsRepository;
     }
 
     public List<NewsDTO> findAll(){
@@ -32,27 +37,39 @@ public class NewsService {
                 .stream().map(this::convertNewsToNewsDTO).toList();
     }
 
-    /*public NewsWithContentDTO findById(int id){
-        Optional<News> foundedNews = newsRepository.findById(id);
-        return foundedNews.map(this::convertNewsToNewsWithContentDTO).orElse(null);
-    }*/
-
     public NewsWithContentDTO findBySlug(String slug){
         Optional<News> foundedNews = newsRepository.findBySlug(slug);
         return foundedNews.map(this::convertNewsToNewsWithContentDTO).orElse(null);
     }
 
     @Transactional
-    public void save(NewsWithContentDTO NewsWithContentDTO){
-        News newNews = convertNewsWithContentDTOToNews(NewsWithContentDTO);
-        //contentRepository.saveAll(newNews.getContentList());
-        newsRepository.save(newNews);
+    public void save(NewsWithContentDTO newsWithContentDTO) throws NewsAddingException {
+        News newNews = convertNewsWithContentDTOToNews(newsWithContentDTO);
+        if (newsRepository.findBySlug(newsWithContentDTO.getSlug()).isPresent()){
+            throw new NewsAddingException("There is already exist news with this title");
+        }else{
+            newsRepository.save(newNews);
+        }
     }
+
+    @Transactional
+    public void delete(String slug) throws NewsDeletingException {
+        if (newsRepository.findBySlug(slug).isPresent()){
+            newsRepository.deleteBySlug(slug);
+        }else{
+            throw new NewsDeletingException("No news with this title");
+        }
+    }
+
+    //
+    //converts section
+    //
 
     private NewsWithContentDTO convertNewsToNewsWithContentDTO(News news){
         List<NewsContentDTO> contentDTOList = news.getContentList().stream().map(this::convertContentToContentDTO).toList();
+        List<TagsDTO> tagsDTOList = news.getTagsList().stream().map(this::convertTagsToTagsDTO).toList();
         return new NewsWithContentDTO(news.getId(), news.getAuthor(), news.getDateOfCreation(), news.getTheme(),
-                news.getDuration(), news.getTitle(), news.getMainUrl(), news.getSlug(), contentDTOList);
+                news.getDuration(), news.getTitle(), news.getMainUrl(), news.getSlug(), contentDTOList, tagsDTOList);
     }
 
     private NewsDTO convertNewsToNewsDTO(News news){
@@ -65,10 +82,15 @@ public class NewsService {
                 newsWithContentDTO.getTitle(), newsWithContentDTO.getDuration(), newsWithContentDTO.getTheme(),
                 newsWithContentDTO.getMainUrl(), newsWithContentDTO.getSlug());
 
-        List<NewsContent> newsContents = newsWithContentDTO.getContentDTOList()
+        List<NewsContent> newsContents = newsWithContentDTO.getContent()
                 .stream().map(el -> convertContentDTOToContent(el, news)).toList();
 
+        Set<Tags> tags = new HashSet<>(newsWithContentDTO.getTags()
+                .stream().map(el -> convertTagsDTOToTags(el, news)).toList());
+
         news.setContentList(newsContents);
+        news.setTagsList(tags);
+
         return news;
     }
 
@@ -78,5 +100,23 @@ public class NewsService {
 
     private NewsContent convertContentDTOToContent(NewsContentDTO newsContentDTO, News news){
         return new NewsContent(newsContentDTO.getType(), newsContentDTO.getText(), newsContentDTO.getUrl(), news);
+    }
+
+    private TagsDTO convertTagsToTagsDTO(Tags tags){
+        return new TagsDTO(tags.getName(), tags.getSlug());
+    }
+
+    private Tags convertTagsDTOToTags(TagsDTO tagsDTO, News news){
+
+        if (tagsRepository.findBySlug(tagsDTO.getSlug()).isEmpty()){
+            Tags newTag = new Tags(tagsDTO.getName(), tagsDTO.getSlug());
+            newTag.setOwner(new HashSet<>());
+            newTag.getOwner().add(news);
+            tagsRepository.save(newTag);
+
+            return newTag;
+        }else{
+            return tagsRepository.findBySlug(tagsDTO.getSlug()).get();
+        }
     }
 }

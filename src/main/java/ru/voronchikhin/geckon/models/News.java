@@ -7,6 +7,7 @@ import org.hibernate.Hibernate;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "news")
@@ -47,9 +48,15 @@ public class News {
     @ToString.Exclude
     private List<NewsContent> contentList;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Tags> tagsList;
+    //@OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
+    //@ToString.Exclude
+    @ManyToMany
+    @JoinTable(
+            name = "news_tags",
+            joinColumns = @JoinColumn(name = "news_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tags> tagsList;
 
     public News(String author, Date dateOfCreation, String title, String duration, String theme,
                 String mainUrl, String slug) {
