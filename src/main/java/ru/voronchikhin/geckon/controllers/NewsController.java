@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.voronchikhin.geckon.dto.NewsDTO;
 import ru.voronchikhin.geckon.dto.NewsWithContentDTO;
 import ru.voronchikhin.geckon.services.NewsService;
+import ru.voronchikhin.geckon.util.ErrorResponse;
+import ru.voronchikhin.geckon.util.NewsAddingException;
+import ru.voronchikhin.geckon.util.NewsDeletingException;
 
 import java.util.List;
 
@@ -35,7 +38,6 @@ public class NewsController {
         return newsService.findBySlug(slug);
     }
 
-    //добавить binding response
     @PostMapping("/new")
     public ResponseEntity<HttpStatus> create(@RequestBody NewsWithContentDTO newsWithContentDTO){
         newsService.save(newsWithContentDTO);
@@ -48,5 +50,15 @@ public class NewsController {
         newsService.delete(slug);
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @ExceptionHandler({NewsDeletingException.class, NewsAddingException.class})
+    public ResponseEntity<ErrorResponse> handleException(RuntimeException e){
+        ErrorResponse response = new ErrorResponse(
+                e.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
