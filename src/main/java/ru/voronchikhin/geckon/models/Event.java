@@ -3,6 +3,7 @@ package ru.voronchikhin.geckon.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -29,8 +30,8 @@ public class Event {
     @Column(name = "img_url")
     private String imgUrl;
 
-    @Column(name = "time_and_date")
-    private String timeAndDate;
+    @Column(name = "time_date")
+    private Date timeDate;
 
     @Column(name = "address")
     private String address;
@@ -44,16 +45,37 @@ public class Event {
     @Column(name = "metro")
     private String metro;
 
+    @Column(name = "slug")
+    private String slug;
+
+    public Event(String url, String descr, String title, String imgUrl, Date timeDate, String address,
+                 String peopleCount, String town, String metro, String slug) {
+        this.url = url;
+        this.descr = descr;
+        this.title = title;
+        this.imgUrl = imgUrl;
+        this.timeDate = timeDate;
+        this.address = address;
+        this.peopleCount = peopleCount;
+        this.town = town;
+        this.metro = metro;
+        this.slug = slug;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(id, event.id) && Objects.equals(url, event.url) && Objects.equals(descr, event.descr) && Objects.equals(title, event.title) && Objects.equals(imgUrl, event.imgUrl) && Objects.equals(timeAndDate, event.timeAndDate) && Objects.equals(address, event.address) && Objects.equals(peopleCount, event.peopleCount) && Objects.equals(town, event.town) && Objects.equals(metro, event.metro);
+        return Objects.equals(id, event.id) && Objects.equals(url, event.url) && Objects.equals(descr, event.descr)
+                && Objects.equals(title, event.title) && Objects.equals(imgUrl, event.imgUrl)
+                && Objects.equals(timeDate, event.timeDate) && Objects.equals(address, event.address)
+                && Objects.equals(peopleCount, event.peopleCount) && Objects.equals(town, event.town)
+                && Objects.equals(metro, event.metro);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, url, descr, title, imgUrl, timeAndDate, address, peopleCount, town, metro);
+        return Objects.hash(id, url, descr, title, imgUrl, timeDate, address, peopleCount, town, metro);
     }
 }
