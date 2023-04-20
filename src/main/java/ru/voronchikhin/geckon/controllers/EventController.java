@@ -5,7 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.voronchikhin.geckon.dto.EventDTO;
 import ru.voronchikhin.geckon.services.EventService;
+import ru.voronchikhin.geckon.util.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -19,16 +22,15 @@ public class EventController {
     }
 
     @GetMapping("/all")
-    public List<EventDTO> getAll(){
-        return eventService.findAll();
-    }
+    public List<EventDTO> getAllBetween(@RequestParam Integer page,
+                                        @RequestParam Integer eventsPerPage,
+                                        @RequestParam String start,
+                                        @RequestParam String end) throws ParseException {
 
-    @GetMapping("/")
-    public List<EventDTO> getAllBetween(@RequestParam(value = "page", required = true) Integer page,
-                                        @RequestParam(value = "events_per_page", required = true) Integer eventsPerPage,
-                                        @RequestParam(value = "start") Date start,
-                                        @RequestParam(value = "end") Date end){
-        return eventService.findAllBetween(page, eventsPerPage, start, end);
+        Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+
+        return eventService.findAllBetween(page, eventsPerPage, startDate, endDate);
     }
 
     @PostMapping("/new")
@@ -50,5 +52,15 @@ public class EventController {
         eventService.delete(slug);
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @ExceptionHandler({EventsAddingException.class, EventsEditingException.class})
+    public ResponseEntity<ErrorResponse> handleException(RuntimeException e){
+        ErrorResponse response = new ErrorResponse(
+                e.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

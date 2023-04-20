@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.voronchikhin.geckon.dto.EventDTO;
 import ru.voronchikhin.geckon.models.Event;
 import ru.voronchikhin.geckon.repositories.EventRepository;
+import ru.voronchikhin.geckon.util.EventsAddingException;
+import ru.voronchikhin.geckon.util.EventsEditingException;
 
 import java.util.Date;
 import java.util.List;
@@ -33,35 +35,35 @@ public class EventService {
     }
 
     @Transactional
-    public void save(EventDTO eventDTO){
+    public void save(EventDTO eventDTO) throws EventsAddingException {
         Event newEvent = convertEventDTOToEvent(eventDTO);
         if (eventRepository.findBySlug(eventDTO.getSlug()).isPresent()){
-            return;
+            throw new EventsAddingException("There is already event with this title");
         }else{
             eventRepository.save(newEvent);
         }
     }
 
     @Transactional
-    public void update(EventDTO eventDTO){
+    public void update(EventDTO eventDTO) throws EventsEditingException {
         Optional<Event> eventToUpdate = eventRepository.findBySlug(eventDTO.getSlug());
         if (eventToUpdate.isPresent()){
             Event event = convertEventDTOToEvent(eventDTO);
             event.setId(eventToUpdate.get().getId());
             eventRepository.save(event);
         }else{
-            return;
+            throw new EventsEditingException("There is no event with this title");
         }
     }
 
     @Transactional
-    public void delete(String slug){
+    public void delete(String slug) throws EventsEditingException{
         Optional<Event> eventToDelete = eventRepository.findBySlug(slug);
 
         if (eventToDelete.isPresent()){
             eventRepository.deleteBySlug(slug);
         }else{
-            return;
+            throw new EventsEditingException("There is no event with this title");
         }
     }
 

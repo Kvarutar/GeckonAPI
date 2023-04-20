@@ -56,6 +56,7 @@ public class News {
             joinColumns = @JoinColumn(name = "news_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @ToString.Exclude
     private Set<Tags> tagsList;
 
     public News(String author, Date dateOfCreation, String title, String duration, String theme,
