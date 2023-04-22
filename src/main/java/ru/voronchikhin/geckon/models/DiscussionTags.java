@@ -16,20 +16,26 @@ import java.util.Set;
 public class DiscussionTags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
     @Column(name = "name")
-    String name;
+    private String name;
 
     @Column(name = "slug")
-    String slug;
+    private String slug;
 
     @Column(name = "count")
-    Integer count;
+    private Integer count;
 
     @ManyToMany
     @ToString.Exclude
-    Set<Discussion> discussions;
+    private Set<Discussion> discussions;
+
+    public DiscussionTags(String name, String slug, Integer count) {
+        this.name = name;
+        this.slug = slug;
+        this.count = count;
+    }
 
     @Override
     public boolean equals(Object o) {

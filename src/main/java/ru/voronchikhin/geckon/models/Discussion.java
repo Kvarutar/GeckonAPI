@@ -47,6 +47,14 @@ public class Discussion {
     @JoinColumn(name = "theme_id", referencedColumnName = "id")
     private Theme theme;
 
+    public Discussion(String name, String slug, String descr, String imgUrl, Date dateOfCreation) {
+        this.name = name;
+        this.slug = slug;
+        this.descr = descr;
+        this.imgUrl = imgUrl;
+        this.dateOfCreation = dateOfCreation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
