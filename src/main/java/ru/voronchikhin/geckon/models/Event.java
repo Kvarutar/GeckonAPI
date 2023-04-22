@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "event")
@@ -47,6 +48,9 @@ public class Event {
 
     @Column(name = "slug")
     private String slug;
+
+    @ManyToMany
+    Set<Person> liked;
 
     public Event(String url, String descr, String title, String imgUrl, Date timeDate, String address,
                  String peopleCount, String town, String metro, String slug) {

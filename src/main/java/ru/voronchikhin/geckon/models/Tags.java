@@ -29,6 +29,10 @@ public class Tags {
     @ToString.Exclude
     private Set<News> owner;
 
+    @ManyToMany
+    @ToString.Exclude
+    private Set<Person> liked;
+
     public Tags(String name, String slug) {
         this.name = name;
         this.slug = slug;
