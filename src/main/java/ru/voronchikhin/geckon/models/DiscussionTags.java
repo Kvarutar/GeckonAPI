@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "discussion_tags")
@@ -25,6 +26,10 @@ public class DiscussionTags {
 
     @Column(name = "count")
     Integer count;
+
+    @ManyToMany
+    @ToString.Exclude
+    Set<Discussion> discussions;
 
     @Override
     public boolean equals(Object o) {

@@ -3,6 +3,7 @@ package ru.voronchikhin.geckon.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +23,9 @@ public class Theme {
 
     @Column(name = "slug")
     String slug;
+
+    @OneToMany(mappedBy = "theme")
+    private List<Discussion> discussions;
 
     @Override
     public boolean equals(Object o) {
