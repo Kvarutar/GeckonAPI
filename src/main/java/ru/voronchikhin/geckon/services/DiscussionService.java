@@ -9,9 +9,9 @@ import ru.voronchikhin.geckon.models.DiscussionTags;
 import ru.voronchikhin.geckon.models.Theme;
 import ru.voronchikhin.geckon.repositories.DiscussionRepository;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,7 +30,8 @@ public class DiscussionService {
     }
 
     public List<DiscussionDTO> findAll(){
-        return discussionRepository.findAll().stream().map(this::convertDiscussionToDiscussionDTO).toList();
+        return discussionRepository.findAll().stream()
+                .map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
     public List<DiscussionDTO> findNew(){
@@ -38,14 +39,29 @@ public class DiscussionService {
                 .map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
+    public List<DiscussionDTO> findByTheme(String slug){
+        return discussionRepository.findAllByTheme_Slug(slug).stream()
+                .map(this::convertDiscussionToDiscussionDTO).toList();
+    }
+
     public DiscussionDTO findBySlug(String slug){
         return discussionRepository.findBySlug(slug).map(this::convertDiscussionToDiscussionDTO).orElse(null);
+    }
+
+    public List<DiscussionDTO> findByTag(String tag){
+        DiscussionTags tags = discussionTagsService.findTagBySlug(tag);
+
+        return discussionRepository.findAll()
+                .stream()
+                .filter(el -> el.getDiscussionTags().contains(tags))
+                .map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
     @Transactional
     public void save(DiscussionDTO discussionDTO){
         Discussion discussionToSave = convertDiscussionDTOToDiscussion(discussionDTO);
         findBySlug(discussionToSave.getSlug());
+
         discussionRepository.save(discussionToSave);
     }
 
@@ -55,41 +71,39 @@ public class DiscussionService {
     }
 
     private DiscussionDTO convertDiscussionToDiscussionDTO(Discussion discussion){
-        Set<DiscussionTagsDTO> tagsList = discussion.getDiscussionTags().stream()
+        Set<DiscussionTagsDTO> tags = discussion.getDiscussionTags().stream()
                 .map(discussionTagsService::convertTagsToTagsDTO).collect(Collectors.toSet());
 
-        return new DiscussionDTO(discussion.getId(), discussion.getName(), discussion.getSlug(),
-                discussion.getDescr(), discussion.getImgUrl(), discussion.getDateOfCreation(), tagsList,
-                themeService.convertThemeToThemeDTO(discussion.getTheme()));
+        return new DiscussionDTO(discussion.getId(), discussion.getName(), discussion.getSlug(), discussion.getDescr(),
+                discussion.getImgUrl(), discussion.getDateOfCreation(), tags, discussion.getTheme().getSlug());
     }
 
     private Discussion convertDiscussionDTOToDiscussion(DiscussionDTO discussionDTO){
-        Discussion discussion = new Discussion(discussionDTO.getName(), discussionDTO.getSlug(),
-                discussionDTO.getDescr(), discussionDTO.getImgUrl(), new Date(System.currentTimeMillis()));
+        Theme theme = themeService.findThemeBySlug(discussionDTO.getThemeSlug());
+        Set<DiscussionTags> tags;
 
-        Theme theme = themeService.convertThemeDTOToTheme(discussionDTO.getTheme());
-        Set<DiscussionTags> discussionTags = discussionDTO.getTagsList().stream()
-                .map(discussionTagsService::convertTagsDTOToTags).collect(Collectors.toSet());
-
-        discussion.setTheme(theme);
-        if (themeService.isPresent(theme.getSlug())){
-            theme.getDiscussions().add(discussion);
+        if (discussionDTO.getTagsList() != null){
+             tags = discussionDTO.getTagsList().stream()
+                    .map(discussionTagsService::convertTagsDTOToTags).collect(Collectors.toSet());
         }else{
-            theme.setDiscussions(new HashSet<>());
-            theme.getDiscussions().add(discussion);
+            tags = new HashSet<>();
         }
-        themeService.save(theme);
 
-        discussion.setDiscussionTags(discussionTags);
-        discussionTags.forEach((el) -> {
-            if (!discussionTagsService.isPresent(el.getSlug())){
-                el.setDiscussions(new HashSet<>());
-                el.getDiscussions().add(discussion);
-                discussionTagsService.save(el);
-            }
-            el.getDiscussions().add(discussion);
-        });
 
-        return discussion;
+        Discussion discussionToSave = new Discussion(discussionDTO.getName(), discussionDTO.getSlug(),
+                discussionDTO.getDescr(), discussionDTO.getImgUrl(), discussionDTO.getDateOfCreation(), tags, theme);
+
+        theme.getDiscussions().add(discussionToSave);
+
+        if (discussionDTO.getTagsList() != null){
+            tags.forEach(el -> el.getDiscussions().add(discussionToSave));
+        }
+
+
+        return discussionToSave;
     }
+
+    /*public Discussion convertPureDiscussionsDTOToDiscussions(PureDiscussionsDTO pureDiscussionsDTO){
+        return
+    }*/
 }

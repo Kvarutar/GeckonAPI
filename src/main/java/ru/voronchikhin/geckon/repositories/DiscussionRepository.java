@@ -11,6 +11,9 @@ import java.util.Optional;
 public interface DiscussionRepository extends JpaRepository<Discussion, Integer> {
     Optional<Discussion> findBySlug(String slug);
     List<Discussion> findAllByOrderByDateOfCreation();
+    List<Discussion> findAllByTheme_Slug(String slug);
+
+    List<Discussion> findAll();
 
     void deleteBySlug(String slug);
 }

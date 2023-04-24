@@ -1,7 +1,9 @@
 package ru.voronchikhin.geckon.dto;
 
-import jakarta.persistence.Column;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
@@ -11,20 +13,14 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DiscussionDTO {
-    Integer id;
+public class ReachThemeDTO {
+    private Integer id;
 
     private String name;
 
     private String slug;
 
-    private String descr;
-
-    private String imgUrl;
-
     private Date dateOfCreation;
 
-    private Set<DiscussionTagsDTO> tagsList;
-
-    private String themeSlug;
+    private Set<PureDiscussionsDTO> discussions;
 }

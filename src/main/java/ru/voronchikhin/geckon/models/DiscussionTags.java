@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "discussion_tags")
+@Table(name = "discussiontags")
 @Getter
 @Setter
 @ToString
@@ -31,10 +31,11 @@ public class DiscussionTags {
     @ToString.Exclude
     private Set<Discussion> discussions;
 
-    public DiscussionTags(String name, String slug, Integer count) {
+    public DiscussionTags(String name, String slug, Integer count, Set<Discussion> discussions) {
         this.name = name;
         this.slug = slug;
         this.count = count;
+        this.discussions = discussions;
     }
 
     @Override

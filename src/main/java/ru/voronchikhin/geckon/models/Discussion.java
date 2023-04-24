@@ -36,9 +36,9 @@ public class Discussion {
 
     @ManyToMany
     @JoinTable(
-            name = "discussions_tags",
-            joinColumns = @JoinColumn(name = "discussion_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
+            name = "discussiontags_discussions",
+            joinColumns = @JoinColumn(name = "discussions_id"),
+            inverseJoinColumns = @JoinColumn(name = "discussion_tags_id")
     )
     @ToString.Exclude
     private Set<DiscussionTags> discussionTags;
@@ -53,6 +53,17 @@ public class Discussion {
         this.descr = descr;
         this.imgUrl = imgUrl;
         this.dateOfCreation = dateOfCreation;
+    }
+
+    public Discussion(String name, String slug, String descr, String imgUrl, Date dateOfCreation,
+                      Set<DiscussionTags> discussionTags, Theme theme) {
+        this.name = name;
+        this.slug = slug;
+        this.descr = descr;
+        this.imgUrl = imgUrl;
+        this.dateOfCreation = dateOfCreation;
+        this.discussionTags = discussionTags;
+        this.theme = theme;
     }
 
     @Override
