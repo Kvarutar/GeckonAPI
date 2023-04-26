@@ -30,6 +30,10 @@ public class Person {
     @Column(name = "photourl")
     private String photoUrl;
 
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private ERole role;
+
     @OneToMany(mappedBy = "person")
     @ToString.Exclude
     private Set<PersonRelations> follows;
@@ -37,6 +41,14 @@ public class Person {
     @OneToMany(mappedBy = "friend")
     @ToString.Exclude
     private Set<PersonRelations> followers;
+
+    /*@ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;*/
 
     @ManyToMany
     @JoinTable(
@@ -55,6 +67,13 @@ public class Person {
     )
     @ToString.Exclude
     private Set<Tags> likedTags;
+
+    public Person(String login, String password, String name, ERole roles) {
+        this.login = login;
+        this.password = password;
+        this.name = name;
+        this.role = roles;
+    }
 
     @Override
     public boolean equals(Object o) {
