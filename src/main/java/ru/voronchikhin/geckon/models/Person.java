@@ -30,6 +30,9 @@ public class Person {
     @Column(name = "photourl")
     private String photoUrl;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private ERole role;

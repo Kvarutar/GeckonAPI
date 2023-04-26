@@ -1,14 +1,13 @@
 package ru.voronchikhin.geckon.controllers;
 
+import jakarta.security.auth.message.AuthException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.voronchikhin.geckon.services.AuthService;
-import ru.voronchikhin.geckon.util.AuthenticationRequest;
-import ru.voronchikhin.geckon.util.AuthenticationResponse;
-import ru.voronchikhin.geckon.util.RegistartionRequest;
+import ru.voronchikhin.geckon.util.*;
+
+import javax.naming.AuthenticationException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -21,13 +20,37 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthenticationResponse> signup(@RequestBody RegistartionRequest request){
+    public ResponseEntity<AuthenticationResponse> signup(@RequestBody RegistartionRequest request)
+            throws AuthException {
+
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthenticationResponse> signin(@RequestBody AuthenticationRequest request){
+    public ResponseEntity<AuthenticationResponse> signin(@RequestBody AuthenticationRequest request)
+            throws AuthException {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
+    @PostMapping("/token")
+    public ResponseEntity<AuthenticationResponse> getNewAccessToken(@RequestBody RefreshJwtRequest request)
+            throws AuthException {
+        return ResponseEntity.ok(authService.getAccessToken(request.getRefreshToken()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> getNewRefreshToken(@RequestBody RefreshJwtRequest request)
+            throws AuthException {
+        return ResponseEntity.ok(authService.refresh(request.getRefreshToken()));
+    }
+
+    @ExceptionHandler({AuthenticationException.class})
+    public ResponseEntity<ErrorResponse> handleException(RuntimeException e){
+        ErrorResponse response = new ErrorResponse(
+                e.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
