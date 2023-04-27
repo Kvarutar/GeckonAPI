@@ -3,6 +3,7 @@ package ru.voronchikhin.geckon.controllers;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.voronchikhin.geckon.services.AuthService;
 import ru.voronchikhin.geckon.util.*;
@@ -43,6 +44,13 @@ public class AuthController {
             throws AuthException {
         return ResponseEntity.ok(authService.refresh(request.getRefreshToken()));
     }
+
+//    @GetMapping("/test")
+//    public void test(){
+//        var tmp = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        return;
+//    }
 
     @ExceptionHandler({AuthenticationException.class})
     public ResponseEntity<ErrorResponse> handleException(RuntimeException e){

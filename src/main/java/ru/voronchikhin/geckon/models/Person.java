@@ -71,6 +71,10 @@ public class Person {
     @ToString.Exclude
     private Set<Tags> likedTags;
 
+    @OneToMany(mappedBy = "sender")
+    private Set<Message> messages;
+
+
     public Person(String login, String password, String name, ERole roles) {
         this.login = login;
         this.password = password;

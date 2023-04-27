@@ -47,6 +47,9 @@ public class Discussion {
     @JoinColumn(name = "theme_id", referencedColumnName = "id")
     private Theme theme;
 
+    @OneToMany(mappedBy = "discussion")
+    private Set<Message> messages;
+
     public Discussion(String name, String slug, String descr, String imgUrl, Date dateOfCreation) {
         this.name = name;
         this.slug = slug;

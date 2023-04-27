@@ -48,6 +48,10 @@ public class DiscussionService {
         return discussionRepository.findBySlug(slug).map(this::convertDiscussionToDiscussionDTO).orElse(null);
     }
 
+    public Discussion findDiscussionBySlug(String slug){
+        return discussionRepository.findBySlug(slug).get();
+    }
+
     public List<DiscussionDTO> findByTag(String tag){
         DiscussionTags tags = discussionTagsService.findTagBySlug(tag);
 

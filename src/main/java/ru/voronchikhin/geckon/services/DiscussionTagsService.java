@@ -42,7 +42,7 @@ public class DiscussionTagsService {
     }
 
     @Transactional
-    public void saveToNews(DiscussionTagsDTO discussionTagsDTO, String newsSlug){
+    public void saveToDiscussion(DiscussionTagsDTO discussionTagsDTO, String newsSlug){
         Optional<DiscussionTags> tag = repository.findBySlug(discussionTagsDTO.getSlug());
         Discussion discussion = discussionRepository.findBySlug(newsSlug).get();
 

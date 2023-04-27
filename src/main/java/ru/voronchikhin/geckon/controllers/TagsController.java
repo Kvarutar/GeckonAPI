@@ -15,6 +15,6 @@ public class TagsController {
 
     @PostMapping("/{slug}")
     public void save(@RequestBody DiscussionTagsDTO discussionTagsDTO, @PathVariable("slug") String slug){
-        tagsService.saveToNews(discussionTagsDTO, slug);
+        tagsService.saveToDiscussion(discussionTagsDTO, slug);
     }
 }
