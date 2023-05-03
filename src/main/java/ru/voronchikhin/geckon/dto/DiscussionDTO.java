@@ -27,4 +27,6 @@ public class DiscussionDTO {
     private Set<DiscussionTagsDTO> tagsList;
 
     private String themeSlug;
+
+    private Integer messagesCount;
 }

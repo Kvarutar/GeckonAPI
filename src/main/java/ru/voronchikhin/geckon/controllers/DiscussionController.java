@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.voronchikhin.geckon.dto.DiscussionDTO;
 import ru.voronchikhin.geckon.services.DiscussionService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,16 +19,32 @@ public class DiscussionController {
         this.discussionService = discussionService;
     }
 
-    @GetMapping()
-    public List<DiscussionDTO> all(@RequestParam(value = "theme", required = false) String theme,
-                                   @RequestParam(value = "tag", required = false) String tag){
+    @GetMapping("/")
+    public List<DiscussionDTO> all(@RequestParam(value = "page") Integer page,
+                                   @RequestParam(value = "discussion_per_page") Integer discussionPerPage,
+                                   @RequestParam(value = "theme", required = false) String theme,
+                                   @RequestParam(value = "tag", required = false) String tag,
+                                   @RequestParam(value = "type", required = false) String type ){
         if (theme == null && tag == null){
-            return discussionService.findAll();
+            if (type != null && type.equals("hot")){
+                return discussionService.findHot(page, discussionPerPage);
+            } else if (type != null && type.equals("new")) {
+                return discussionService.findNew(page, discussionPerPage);
+            }else{
+                return discussionService.findAll(page, discussionPerPage);
+            }
         }else if (theme != null){
-            return discussionService.findByTheme(theme);
+            return discussionService.findByTheme(theme, page, discussionPerPage);
         }else{
             return discussionService.findByTag(tag);
         }
+    }
+
+    @GetMapping("/without")
+    public List<DiscussionDTO> without(){
+        List<String> tmp = new ArrayList<>(List.of("minecraft"));
+
+        return discussionService.findAllByNotTags(tmp);
     }
 
     @PostMapping("/new")

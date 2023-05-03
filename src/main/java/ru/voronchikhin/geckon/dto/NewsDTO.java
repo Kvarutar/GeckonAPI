@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -15,6 +16,7 @@ import java.util.Date;
 public class NewsDTO {
     private int id;
     @NotBlank
+    //убрать автора
     private String author;
     private Date dateOfCreation;
     @NotBlank
@@ -27,4 +29,5 @@ public class NewsDTO {
     private String mainUrl;
     @NotBlank
     private String slug;
+    private List<TagsDTO> tags;
 }

@@ -28,9 +28,14 @@ public class NewsService {
         this.tagsRepository = tagsRepository;
     }
 
-    public List<NewsDTO> findAll(){
-        return newsRepository.findAll().stream().map(this::convertNewsToNewsDTO).toList();
+    public List<NewsDTO> findAll(int page, int newsPerPage){
+        return newsRepository.findAllByOrderByDateOfCreation(PageRequest.of(page, newsPerPage))
+                .stream().map(this::convertNewsToNewsDTO).toList();
     }
+
+//    public List<NewsDTO> findAllByNotTags(List<String> tags){
+//        return;
+//    }
 
     public List<NewsDTO> findPagination(int page, int newsPerPage, String theme){
         return newsRepository.findByThemeOrderByDateOfCreation(theme, PageRequest.of(page, newsPerPage))
@@ -73,8 +78,10 @@ public class NewsService {
     }
 
     private NewsDTO convertNewsToNewsDTO(News news){
+        List<TagsDTO> tagsDTOList = news.getTagsList().stream().map(this::convertTagsToTagsDTO).toList();
+
         return new NewsDTO(news.getId(), news.getAuthor(), news.getDateOfCreation(), news.getTheme(),
-                news.getDuration(), news.getTitle(), news.getMainUrl(), news.getSlug());
+                news.getDuration(), news.getTitle(), news.getMainUrl(), news.getSlug(), tagsDTOList);
     }
 
     private News convertNewsWithContentDTOToNews(NewsWithContentDTO newsWithContentDTO){

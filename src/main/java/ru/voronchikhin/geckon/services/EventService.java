@@ -22,13 +22,14 @@ public class EventService {
         this.eventRepository = eventRepository;
     }
 
-    public List<EventDTO> findAll(){
-        List<Event> allEvents = eventRepository.findAllByOrderByTimeDate();
+    public List<EventDTO> findAll(int page, int eventsPerPage){
+        List<Event> allEvents = eventRepository
+                .findAllByOrderByTimeDate(PageRequest.of(page, eventsPerPage));
         return allEvents.stream().map(this::convertEventToEventDTO).toList();
     }
 
     public List<EventDTO> findAllBetween(int page, int eventsPerPage, Date start, Date end){
-        List<Event> allEvents = eventRepository.findAllByTimeDateBetween(start, end,
+        List<Event> allEvents = eventRepository.findAllByTimeDateBetweenOrderByTimeDate(start, end,
                 PageRequest.of(page, eventsPerPage));
 
         return allEvents.stream().map(this::convertEventToEventDTO).toList();

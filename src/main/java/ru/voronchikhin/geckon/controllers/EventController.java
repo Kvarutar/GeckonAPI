@@ -21,16 +21,20 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping("/all")
-    public List<EventDTO> getAllBetween(@RequestParam Integer page,
-                                        @RequestParam Integer eventsPerPage,
-                                        @RequestParam String start,
-                                        @RequestParam String end) throws ParseException {
+    @GetMapping("/")
+    public List<EventDTO> getAllBetween(@RequestParam(value = "page") Integer page,
+                                        @RequestParam(value = "events_per_page") Integer eventsPerPage,
+                                        @RequestParam(value = "start", required = false) String start,
+                                        @RequestParam(value = "end", required = false) String end) throws ParseException {
 
-        Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
-        Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+        if(start == null && end == null){
+            return eventService.findAll(page, eventsPerPage);
+        }else{
+            Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+            Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
 
-        return eventService.findAllBetween(page, eventsPerPage, startDate, endDate);
+            return eventService.findAllBetween(page, eventsPerPage, startDate, endDate);
+        }
     }
 
     @PostMapping("/new")

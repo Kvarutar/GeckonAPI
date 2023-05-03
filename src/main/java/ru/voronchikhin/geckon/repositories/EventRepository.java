@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
-    List<Event> findAllByOrderByTimeDate();
     Optional<Event> findBySlug(String slug);
     void deleteBySlug(String slug);
-    List<Event> findAllByTimeDateBetween(Date start, Date end, PageRequest pageRequest);
+    List<Event> findAllByTimeDateBetweenOrderByTimeDate(Date start, Date end, PageRequest pageRequest);
+    List<Event> findAllByOrderByTimeDate(PageRequest pageRequest);
 }

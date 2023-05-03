@@ -21,16 +21,23 @@ public class NewsController {
         this.newsService = newsService;
     }
 
-    @GetMapping("/all")
-    public List<NewsDTO> getNews(){
-        return newsService.findAll();
-    }
+//    @GetMapping("/all")
+//    public List<NewsDTO> getNews(@RequestParam(value = "page", required = true) Integer page,
+//                                 @RequestParam(value = "news_per_page", required = true) Integer newsPerPage){
+//
+//    }
 
     @GetMapping("/")
-    public List<NewsDTO> getPaginationNews(@RequestParam(value = "page", required = true) Integer page,
-                                           @RequestParam(value = "news_per_page", required = true) Integer newsPerPage,
-                                           @RequestParam(value = "theme") String theme){
-        return newsService.findPagination(page, newsPerPage, theme);
+    public List<NewsDTO> getPaginationNews(@RequestParam(value = "page") Integer page,
+                                           @RequestParam(value = "news_per_page") Integer newsPerPage,
+                                           @RequestParam(value = "theme", required = false) String theme){
+
+        if (theme == null){
+            return newsService.findAll(page, newsPerPage);
+        }else{
+            return newsService.findPagination(page, newsPerPage, theme);
+        }
+
     }
 
     @GetMapping("/{slug}")

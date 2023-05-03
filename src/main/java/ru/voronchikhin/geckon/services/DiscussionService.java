@@ -1,5 +1,6 @@
 package ru.voronchikhin.geckon.services;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.voronchikhin.geckon.dto.DiscussionDTO;
@@ -9,10 +10,7 @@ import ru.voronchikhin.geckon.models.DiscussionTags;
 import ru.voronchikhin.geckon.models.Theme;
 import ru.voronchikhin.geckon.repositories.DiscussionRepository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,19 +27,30 @@ public class DiscussionService {
         this.themeService = themeService;
     }
 
-    public List<DiscussionDTO> findAll(){
-        return discussionRepository.findAll().stream()
-                .map(this::convertDiscussionToDiscussionDTO).toList();
+    public List<DiscussionDTO> findAll(int page, int discussionPerPage){
+        return discussionRepository.findAll(PageRequest.of(page, discussionPerPage))
+                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
-    public List<DiscussionDTO> findNew(){
-        return discussionRepository.findAllByOrderByDateOfCreation().stream()
-                .map(this::convertDiscussionToDiscussionDTO).toList();
+    public List<DiscussionDTO> findAllByNotTags(List<String> tags){
+
+        return discussionRepository.findWithoutTagList(tags)
+                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
-    public List<DiscussionDTO> findByTheme(String slug){
-        return discussionRepository.findAllByTheme_Slug(slug).stream()
-                .map(this::convertDiscussionToDiscussionDTO).toList();
+    public List<DiscussionDTO> findNew(int page, int discussionPerPage){
+        return discussionRepository.findAllByOrderByDateOfCreation(PageRequest.of(page, discussionPerPage))
+                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+    }
+
+    public List<DiscussionDTO> findHot(int page, int discussionPerPage){
+        return discussionRepository.findAllByOrderByMessagesDesc(PageRequest.of(page, discussionPerPage))
+                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+    }
+
+    public List<DiscussionDTO> findByTheme(String slug, int page, int discussionPerPage){
+        return discussionRepository.findAllByTheme_Slug(slug, PageRequest.of(page, discussionPerPage))
+                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
     public DiscussionDTO findBySlug(String slug){
@@ -79,7 +88,8 @@ public class DiscussionService {
                 .map(discussionTagsService::convertTagsToTagsDTO).collect(Collectors.toSet());
 
         return new DiscussionDTO(discussion.getId(), discussion.getName(), discussion.getSlug(), discussion.getDescr(),
-                discussion.getImgUrl(), discussion.getDateOfCreation(), tags, discussion.getTheme().getSlug());
+                discussion.getImgUrl(), discussion.getDateOfCreation(), tags, discussion.getTheme().getSlug(),
+                discussion.getMessages().size());
     }
 
     private Discussion convertDiscussionDTOToDiscussion(DiscussionDTO discussionDTO){
