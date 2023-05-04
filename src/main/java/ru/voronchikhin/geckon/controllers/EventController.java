@@ -30,8 +30,8 @@ public class EventController {
         if(start == null && end == null){
             return eventService.findAll(page, eventsPerPage);
         }else{
-            Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
-            Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+            Date startDate = new SimpleDateFormat("MM/dd/yyyy").parse(start);
+            Date endDate = new SimpleDateFormat("MM/dd/yyyy").parse(end);
 
             return eventService.findAllBetween(page, eventsPerPage, startDate, endDate);
         }

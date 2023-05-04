@@ -44,7 +44,7 @@ public class DiscussionService {
     }
 
     public List<DiscussionDTO> findHot(int page, int discussionPerPage){
-        return discussionRepository.findAllByOrderByMessagesDesc(PageRequest.of(page, discussionPerPage))
+        return discussionRepository.findAllByOrderByMessagesAsc(PageRequest.of(page, discussionPerPage))
                 .stream().map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
