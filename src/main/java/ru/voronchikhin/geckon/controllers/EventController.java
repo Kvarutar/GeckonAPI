@@ -25,16 +25,27 @@ public class EventController {
     public List<EventDTO> getAllBetween(@RequestParam(value = "page") Integer page,
                                         @RequestParam(value = "events_per_page") Integer eventsPerPage,
                                         @RequestParam(value = "start", required = false) String start,
-                                        @RequestParam(value = "end", required = false) String end) throws ParseException {
+                                        @RequestParam(value = "end", required = false) String end,
+                                        @RequestParam(value = "town", required = false) String town) throws ParseException {
 
         if(start == null && end == null){
             return eventService.findAll(page, eventsPerPage);
-        }else{
+        }else if (town == null){
             Date startDate = new SimpleDateFormat("MM/dd/yyyy").parse(start);
             Date endDate = new SimpleDateFormat("MM/dd/yyyy").parse(end);
 
             return eventService.findAllBetween(page, eventsPerPage, startDate, endDate);
+        }else{
+            Date startDate = new SimpleDateFormat("MM/dd/yyyy").parse(start);
+            Date endDate = new SimpleDateFormat("MM/dd/yyyy").parse(end);
+
+            return eventService.findAllByTown(page, eventsPerPage, startDate, endDate, town);
         }
+    }
+
+    @GetMapping("/towns")
+    public List<String> findAllTowns(){
+        return eventService.findAllTowns();
     }
 
     @PostMapping("/new")

@@ -41,10 +41,11 @@ public class DiscussionController {
     }
 
     @GetMapping("/without")
-    public List<DiscussionDTO> without(){
-        List<String> tmp = new ArrayList<>(List.of("minecraft"));
+    public List<DiscussionDTO> without(@RequestParam(value = "page") Integer page,
+                                       @RequestParam(value = "discussion_per_page") Integer discussionPerPage,
+                                       @RequestParam(value = "tags") String[] tags){
 
-        return discussionService.findAllByNotTags(tmp);
+        return discussionService.findAllByNotTags(List.of(tags), page, discussionPerPage);
     }
 
     @PostMapping("/new")

@@ -32,9 +32,9 @@ public class DiscussionService {
                 .stream().map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
-    public List<DiscussionDTO> findAllByNotTags(List<String> tags){
+    public List<DiscussionDTO> findAllByNotTags(List<String> tags, Integer page, Integer discussionPerPage){
 
-        return discussionRepository.findWithoutTagList(tags)
+        return discussionRepository.findWithoutTagList(tags, PageRequest.of(page, discussionPerPage))
                 .stream().map(this::convertDiscussionToDiscussionDTO).toList();
     }
 

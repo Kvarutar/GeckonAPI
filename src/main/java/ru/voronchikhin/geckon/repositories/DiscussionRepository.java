@@ -23,8 +23,8 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Integer>
             "               from discussiontags_discussions q\n" +
             "               where q.discussion_tags_id in (select id\n" +
             "                                              from discussiontags z\n" +
-            "                                              where z.slug in ('minecraft')))",
+            "                                              where z.slug in :tags))",
     nativeQuery = true)
-    List<Discussion> findWithoutTagList(@Param(value = "tags") List<String> tags);
+    List<Discussion> findWithoutTagList(@Param(value = "tags") List<String> tags, PageRequest pageRequest);
     void deleteBySlug(String slug);
 }

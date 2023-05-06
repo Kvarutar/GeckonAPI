@@ -37,6 +37,16 @@ public class NewsService {
 //        return;
 //    }
 
+    public List<NewsDTO> findByTagsCount(List<String> tags, int page, int newsPerPage){
+        return newsRepository.findByTagsCount(tags, PageRequest.of(page, newsPerPage))
+                .stream().map(this::convertNewsToNewsDTO).toList();
+    }
+
+    public List<NewsDTO> findWithoutTags(List<String> tags, int page, int newsPerPage){
+        return newsRepository.findWithoutTags(tags, PageRequest.of(page, newsPerPage))
+                .stream().map(this::convertNewsToNewsDTO).toList();
+    }
+
     public List<NewsDTO> findPagination(int page, int newsPerPage, String theme){
         return newsRepository.findByThemeOrderByDateOfCreation(theme, PageRequest.of(page, newsPerPage))
                 .stream().map(this::convertNewsToNewsDTO).toList();

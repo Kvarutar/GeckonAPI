@@ -28,6 +28,16 @@ public class EventService {
         return allEvents.stream().map(this::convertEventToEventDTO).toList();
     }
 
+    public List<String> findAllTowns(){
+        return List.of(eventRepository.findAllTowns());
+    }
+
+    public List<EventDTO> findAllByTown(int page, int eventsPerPage, Date start, Date end, String town){
+        return eventRepository
+                .findAllByTownAndTimeDateBetweenOrderByTimeDate(town, start, end, PageRequest.of(page, eventsPerPage))
+                .stream().map(this::convertEventToEventDTO).toList();
+    }
+
     public List<EventDTO> findAllBetween(int page, int eventsPerPage, Date start, Date end){
         List<Event> allEvents = eventRepository.findAllByTimeDateBetweenOrderByTimeDate(start, end,
                 PageRequest.of(page, eventsPerPage));
