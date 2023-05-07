@@ -48,6 +48,11 @@ public class EventController {
         return eventService.findAllTowns();
     }
 
+    @GetMapping("/{slug}")
+    public EventDTO getOne(@PathVariable("slug") String slug){
+        return eventService.findBySlug(slug);
+    }
+
     @PostMapping("/new")
     public ResponseEntity<HttpStatus> create(@RequestBody EventDTO eventDTO){
         eventService.save(eventDTO);

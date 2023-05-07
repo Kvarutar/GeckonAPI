@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.voronchikhin.geckon.dto.EventDTO;
 import ru.voronchikhin.geckon.models.Event;
+import ru.voronchikhin.geckon.models.News;
 import ru.voronchikhin.geckon.repositories.EventRepository;
 import ru.voronchikhin.geckon.util.EventsAddingException;
 import ru.voronchikhin.geckon.util.EventsEditingException;
@@ -26,6 +27,11 @@ public class EventService {
         List<Event> allEvents = eventRepository
                 .findAllByOrderByTimeDate(PageRequest.of(page, eventsPerPage));
         return allEvents.stream().map(this::convertEventToEventDTO).toList();
+    }
+
+    public EventDTO findBySlug(String slug){
+        Optional<Event> foundedNews = eventRepository.findBySlug(slug);
+        return foundedNews.map(this::convertEventToEventDTO).orElse(null);
     }
 
     public List<String> findAllTowns(){
