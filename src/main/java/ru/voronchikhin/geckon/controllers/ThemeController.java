@@ -16,9 +16,10 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping()
-    public List<ReachThemeDTO> all(){
-        return themeService.findAll();
+    @GetMapping("/")
+    public List<ReachThemeDTO> all(@RequestParam(value = "page") int page,
+                                   @RequestParam(value = "theme_per_page") int themePerPage){
+        return themeService.findAll(page, themePerPage);
     }
 
     @PostMapping("/new")

@@ -16,6 +16,7 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Integer>
     Optional<Discussion> findBySlug(String slug);
     List<Discussion> findAllByOrderByDateOfCreation(PageRequest pageRequest);
     List<Discussion> findAllByTheme_Slug(String slug, PageRequest pageRequest);
+    List<Discussion> findAllByTheme_SlugOrderByDateOfCreation(String slug, PageRequest pageRequest);
     List<Discussion> findAllByOrderByMessagesAsc(PageRequest pageRequest);
     @Query(value = "Select *\n" +
             "from discussion d\n" +

@@ -24,7 +24,8 @@ public class DiscussionController {
                                    @RequestParam(value = "discussion_per_page") Integer discussionPerPage,
                                    @RequestParam(value = "theme", required = false) String theme,
                                    @RequestParam(value = "tag", required = false) String tag,
-                                   @RequestParam(value = "type", required = false) String type ){
+                                   @RequestParam(value = "type", required = false) String type,
+                                   @RequestParam(value = "theme_sort", required = false) String themeSort){
         if (theme == null && tag == null){
             if (type != null && type.equals("hot")){
                 return discussionService.findHot(page, discussionPerPage);
@@ -34,8 +35,12 @@ public class DiscussionController {
                 return discussionService.findAll(page, discussionPerPage);
             }
         }else if (theme != null){
-            return discussionService.findByTheme(theme, page, discussionPerPage);
-        }else{
+            if (themeSort != null){
+                return discussionService.findNewByTheme(theme, page, discussionPerPage);
+            }else{
+                return discussionService.findByTheme(theme, page, discussionPerPage);
+            }
+        } else{
             return discussionService.findByTag(tag);
         }
     }

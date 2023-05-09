@@ -53,6 +53,12 @@ public class DiscussionService {
                 .stream().map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
+    public List<DiscussionDTO> findNewByTheme(String slug, int page, int discussionPerPage){
+        return discussionRepository.findAllByTheme_SlugOrderByDateOfCreation(slug,
+                        PageRequest.of(page, discussionPerPage))
+                .stream().map(this::convertDiscussionToDiscussionDTO).collect(Collectors.toList());
+    }
+
     public DiscussionDTO findBySlug(String slug){
         return discussionRepository.findBySlug(slug).map(this::convertDiscussionToDiscussionDTO).orElse(null);
     }
@@ -105,7 +111,7 @@ public class DiscussionService {
 
 
         Discussion discussionToSave = new Discussion(discussionDTO.getName(), discussionDTO.getSlug(),
-                discussionDTO.getDescr(), discussionDTO.getImgUrl(), discussionDTO.getDateOfCreation(), tags, theme);
+                discussionDTO.getDescr(), discussionDTO.getImgUrl(), new Date(System.currentTimeMillis()), tags, theme);
 
         theme.getDiscussions().add(discussionToSave);
 

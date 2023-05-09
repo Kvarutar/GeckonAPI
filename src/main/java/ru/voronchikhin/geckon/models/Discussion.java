@@ -58,6 +58,10 @@ public class Discussion {
         this.dateOfCreation = dateOfCreation;
     }
 
+    public int getMessagesSize(){
+        return this.messages.size();
+    }
+
     public Discussion(String name, String slug, String descr, String imgUrl, Date dateOfCreation,
                       Set<DiscussionTags> discussionTags, Theme theme) {
         this.name = name;

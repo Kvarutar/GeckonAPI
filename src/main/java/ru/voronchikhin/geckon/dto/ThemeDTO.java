@@ -19,4 +19,6 @@ public class ThemeDTO {
     private String slug;
 
     private Date dateOfCreation;
+
+    private Integer discussionCount;
 }

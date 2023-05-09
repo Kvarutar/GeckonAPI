@@ -39,6 +39,10 @@ public class Theme {
         this.dateOfCreation = dateOfCreation;
     }
 
+    public Integer getDiscussionSize(){
+        return discussions.size();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
