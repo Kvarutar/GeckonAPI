@@ -2,6 +2,7 @@ package ru.voronchikhin.geckon.controllers;
 
 import jakarta.security.auth.message.AuthException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,8 @@ import ru.voronchikhin.geckon.util.*;
 import javax.naming.AuthenticationException;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping(value = "/api/v1/auth", consumes = {"application/json"},
+        produces = {"application/json"})
 public class AuthController {
 
     private final AuthService authService;
@@ -28,6 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
+    @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<AuthenticationResponse> signin(@RequestBody AuthenticationRequest request)
             throws AuthException {
         return ResponseEntity.ok(authService.authenticate(request));
@@ -44,13 +47,6 @@ public class AuthController {
             throws AuthException {
         return ResponseEntity.ok(authService.refresh(request.getRefreshToken()));
     }
-
-//    @GetMapping("/test")
-//    public void test(){
-//        var tmp = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//        return;
-//    }
 
     @ExceptionHandler({AuthenticationException.class})
     public ResponseEntity<ErrorResponse> handleException(RuntimeException e){

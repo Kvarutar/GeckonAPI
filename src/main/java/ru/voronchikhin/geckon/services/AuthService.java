@@ -64,15 +64,6 @@ public class AuthService {
         final String refreshToken = jwtService.generateRefreshToken(new PersonDetails(person));
         person.setRefreshToken(refreshToken);
         return new AuthenticationResponse(accessToken, refreshToken);
-
-        /*if (person.getPassword().equals(passwordEncoder.encode(request.getPassword()))){
-            final String accessToken = jwtService.generateAccessToken(new PersonDetails(person));
-            final String refreshToken = jwtService.generateRefreshToken(new PersonDetails(person));
-            person.setRefreshToken(refreshToken);
-            return new AuthenticationResponse(accessToken, refreshToken);
-        }else{
-            throw new AuthException("incorrect password");
-        }*/
     }
 
     public AuthenticationResponse getAccessToken(String refreshToken) throws AuthException {
@@ -92,6 +83,7 @@ public class AuthService {
     }
 
     @Transactional
+    //здесь нужна аутентификация
     public AuthenticationResponse refresh(String refreshToken) throws AuthException {
         if (jwtService.validateRefreshToken(refreshToken)){
             final Claims refreshClaims = jwtService.getRefreshClaims(refreshToken);
