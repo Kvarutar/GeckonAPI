@@ -18,22 +18,16 @@ public class Discussion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @Column(name = "name")
     private String name;
-
     @Column(name = "slug")
     private String slug;
-
     @Column(name = "descr")
     private String descr;
-
     @Column(name = "img_url")
     private String imgUrl;
-
     @Column(name = "date_of_creation")
     private Date dateOfCreation;
-
     @ManyToMany
     @JoinTable(
             name = "discussiontags_discussions",
@@ -42,13 +36,14 @@ public class Discussion {
     )
     @ToString.Exclude
     private Set<DiscussionTags> discussionTags;
-
     @ManyToOne
     @JoinColumn(name = "theme_id", referencedColumnName = "id")
     private Theme theme;
-
     @OneToMany(mappedBy = "discussion")
+    @ToString.Exclude
     private Set<Message> messages;
+
+    //getters and setters, hashcode and equals
 
     public Discussion(String name, String slug, String descr, String imgUrl, Date dateOfCreation) {
         this.name = name;

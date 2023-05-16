@@ -17,39 +17,27 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class News {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @Column(name = "author")
     private String author;
-
     @Column(name = "date_of_creation")
     private Date dateOfCreation;
-
     @Column(name = "title")
     private String title;
-
     @Column(name = "duration")
     private String duration;
-
-    //ENUM?
     @Column(name = "theme")
     private String theme;
-
     @Column(name = "main_url")
     private String mainUrl;
-
     @Column(name = "slug")
     private String slug;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<NewsContent> contentList;
-
-    //@OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
-    //@ToString.Exclude
     @ManyToMany
     @JoinTable(
             name = "news_tags",
@@ -58,6 +46,8 @@ public class News {
     )
     @ToString.Exclude
     private Set<Tags> tagsList;
+
+    //getters and setters, hashcode and equals
 
     public News(String author, Date dateOfCreation, String title, String duration, String theme,
                 String mainUrl, String slug) {

@@ -17,22 +17,17 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @Column(name = "login")
     private String login;
-
     @Column(name = "password")
     private String password;
-
     @Column(name = "name")
     private String name;
-
     @Column(name = "photourl")
     private String photoUrl;
 
     @Column(name = "refresh_token")
     private String refreshToken;
-
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private ERole role;
@@ -44,6 +39,8 @@ public class Person {
     @OneToMany(mappedBy = "friend")
     @ToString.Exclude
     private Set<PersonRelations> followers;
+
+    //getters and setters, hashcode and equals
 
     /*@ManyToMany
     @JoinTable(

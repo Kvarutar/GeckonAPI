@@ -3,6 +3,8 @@ package ru.voronchikhin.geckon.services;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.voronchikhin.geckon.dto.NewsContentDTO;
 import ru.voronchikhin.geckon.dto.NewsDTO;
 import ru.voronchikhin.geckon.dto.NewsWithContentDTO;
@@ -15,6 +17,11 @@ import ru.voronchikhin.geckon.repositories.TagsRepository;
 import ru.voronchikhin.geckon.util.NewsAddingException;
 import ru.voronchikhin.geckon.util.NewsDeletingException;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -32,10 +39,6 @@ public class NewsService {
         return newsRepository.findAllByOrderByDateOfCreation(PageRequest.of(page, newsPerPage))
                 .stream().map(this::convertNewsToNewsDTO).toList();
     }
-
-//    public List<NewsDTO> findAllByNotTags(List<String> tags){
-//        return;
-//    }
 
     public List<NewsDTO> findByTagsCount(List<String> tags, int page, int newsPerPage){
         return newsRepository.findByTagsCount(tags, PageRequest.of(page, newsPerPage))
@@ -58,8 +61,8 @@ public class NewsService {
     }
 
     @Transactional
-    public void save(NewsWithContentDTO newsWithContentDTO) throws NewsAddingException {
-        News newNews = convertNewsWithContentDTOToNews(newsWithContentDTO);
+    public void save(NewsWithContentDTO newsWithContentDTO, MultipartFile[] files) throws NewsAddingException {
+        News newNews = convertNewsWithContentDTOToNews(newsWithContentDTO, files);
         if (newsRepository.findBySlug(newsWithContentDTO.getSlug()).isPresent()){
             throw new NewsAddingException("There is already exist news with this title");
         }else{
@@ -94,13 +97,27 @@ public class NewsService {
                 news.getDuration(), news.getTitle(), news.getMainUrl(), news.getSlug(), tagsDTOList);
     }
 
-    private News convertNewsWithContentDTOToNews(NewsWithContentDTO newsWithContentDTO){
+    private News convertNewsWithContentDTOToNews(NewsWithContentDTO newsWithContentDTO, MultipartFile[] files){
+        createDirIfNotExist();
+
+        String url = "";
+        byte[] bytes;
+        try {
+            bytes = files[0].getBytes();
+            Files.write(Paths.get("/images/" + files[0].getOriginalFilename()), bytes);
+            System.out.println();
+            url = String.valueOf(Paths.get("/images/" + files[0].getOriginalFilename()));
+        } catch (IOException e) {
+
+        }
+
+
         News news = new News(newsWithContentDTO.getAuthor(), new Date(System.currentTimeMillis()),
                 newsWithContentDTO.getTitle(), newsWithContentDTO.getDuration(), newsWithContentDTO.getTheme(),
-                newsWithContentDTO.getMainUrl(), newsWithContentDTO.getSlug());
+                url, newsWithContentDTO.getSlug());
 
         List<NewsContent> newsContents = newsWithContentDTO.getContent()
-                .stream().map(el -> convertContentDTOToContent(el, news)).toList();
+                .stream().map(el -> convertContentDTOToContent(el, news, files)).toList();
 
         Set<Tags> tags = new HashSet<>(newsWithContentDTO.getTags()
                 .stream().map(el -> convertTagsDTOToTags(el, news)).toList());
@@ -115,8 +132,32 @@ public class NewsService {
         return new NewsContentDTO(newsContent.getType(), newsContent.getText(), newsContent.getUrl());
     }
 
-    private NewsContent convertContentDTOToContent(NewsContentDTO newsContentDTO, News news){
-        return new NewsContent(newsContentDTO.getType(), newsContentDTO.getText(), newsContentDTO.getUrl(), news);
+    private NewsContent convertContentDTOToContent(NewsContentDTO newsContentDTO, News news, MultipartFile[] files){
+        String url = "";
+
+        createDirIfNotExist();
+
+        if (newsContentDTO.getType().equals("image")){
+            byte[] bytes = new byte[0];
+            try {
+                bytes = files[Integer.parseInt(newsContentDTO.getImgId())].getBytes();
+                Files.write(Paths.get("/images/" + files[Integer.parseInt(newsContentDTO.getImgId())].getOriginalFilename()), bytes);
+                System.out.println();
+                url = String.valueOf(Paths.get("/images/" + files[Integer.parseInt(newsContentDTO.getImgId())].getOriginalFilename()));
+            } catch (IOException e) {
+
+            }
+        }
+
+        return new NewsContent(newsContentDTO.getType(), newsContentDTO.getText(), url, news);
+    }
+
+    private void createDirIfNotExist() {
+        //create directory to save the files
+        File directory = new File("/images/");
+        if (! directory.exists()){
+            directory.mkdir();
+        }
     }
 
     private TagsDTO convertTagsToTagsDTO(Tags tags){

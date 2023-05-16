@@ -18,39 +18,30 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @Column(name = "url")
     private String url;
-
     @Column(name = "descr")
     private String descr;
-
     @Column(name = "title")
     private String title;
-
     @Column(name = "img_url")
     private String imgUrl;
-
     @Column(name = "time_date")
     private Date timeDate;
-
     @Column(name = "address")
     private String address;
-
     @Column(name = "people_count")
     private String peopleCount;
-
     @Column(name = "town")
     private String town;
-
     @Column(name = "metro")
     private String metro;
-
     @Column(name = "slug")
     private String slug;
-
     @ManyToMany
     Set<Person> liked;
+
+    //getters and setters, hashcode and equals
 
     public Event(String url, String descr, String title, String imgUrl, Date timeDate, String address,
                  String peopleCount, String town, String metro, String slug) {

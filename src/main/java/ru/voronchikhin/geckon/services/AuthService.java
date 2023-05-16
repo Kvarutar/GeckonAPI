@@ -24,14 +24,10 @@ import java.util.HashSet;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-
     private final PersonRepository repository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-
-
-
     @Transactional
     public AuthenticationResponse register(RegistartionRequest request) throws AuthException {
         if (repository.existsByLogin(request.getLogin())){
