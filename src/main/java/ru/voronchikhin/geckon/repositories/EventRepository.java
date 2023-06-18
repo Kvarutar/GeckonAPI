@@ -17,6 +17,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     Optional<Event> findBySlug(String slug);
     void deleteBySlug(String slug);
     List<Event> findAllByTimeDateBetweenOrderByTimeDate(Date start, Date end, PageRequest pageRequest);
+    List<Event> findAllByTimeDateBetweenAndSlugContainsOrderByTimeDate(Date start, Date end, String slug,
+                                                                       PageRequest pageRequest);
     List<Event> findAllByOrderByTimeDate(PageRequest pageRequest);
 
     @Query(value = "Select town\n" +
@@ -25,5 +27,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     nativeQuery = true)
     String[] findAllTowns();
 
-    List<Event> findAllByTownAndTimeDateBetweenOrderByTimeDate(String town, Date start, Date end, PageRequest pageRequest);
+    List<Event> findAllByTownAndTimeDateBetweenOrderByTimeDate(String town, Date start, Date end,
+                                                               PageRequest pageRequest);
+    List<Event> findAllByTownAndTimeDateBetweenAndSlugContainsOrderByTimeDate(String town, Date start, Date end,
+                                                                              String slug, PageRequest pageRequest);
 }

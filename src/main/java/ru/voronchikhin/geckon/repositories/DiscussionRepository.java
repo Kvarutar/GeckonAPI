@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.voronchikhin.geckon.models.Discussion;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,15 @@ import java.util.Optional;
 public interface DiscussionRepository extends JpaRepository<Discussion, Integer> {
     Optional<Discussion> findBySlug(String slug);
     List<Discussion> findAllByOrderByDateOfCreation(PageRequest pageRequest);
+    List<Discussion> findAllByTheme_SlugAndSlugContainsOrderByDateOfCreation(String themeSlug, String slug,
+                                                                             PageRequest pageRequest);
+    List<Discussion> findAllByTheme_SlugOrderByMessagesAsc(String slug, PageRequest pageRequest);
+    List<Discussion> findAllByTheme_SlugAndSlugContainsOrderByMessagesAsc(String themeSlug, String slug,
+                                                                          PageRequest pageRequest);
     List<Discussion> findAllByTheme_Slug(String slug, PageRequest pageRequest);
+    List<Discussion> findAllByTheme_SlugAndSlugContains(String themeSlug, String slug, PageRequest pageRequest);
     List<Discussion> findAllByTheme_SlugOrderByDateOfCreation(String slug, PageRequest pageRequest);
-    List<Discussion> findAllByOrderByMessagesAsc(PageRequest pageRequest);
+
     @Query(value = "Select *\n" +
             "from discussion d\n" +
             "where d.id not in (select discussions_id\n" +
@@ -28,4 +35,6 @@ public interface DiscussionRepository extends JpaRepository<Discussion, Integer>
     nativeQuery = true)
     List<Discussion> findWithoutTagList(@Param(value = "tags") List<String> tags, PageRequest pageRequest);
     void deleteBySlug(String slug);
+
+    List<Discussion> findAllBySlugContains(String slug, PageRequest pageRequest);
 }

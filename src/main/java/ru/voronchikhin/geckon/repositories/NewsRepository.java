@@ -12,9 +12,13 @@ import java.util.Optional;
 
 @Repository
 public interface NewsRepository extends JpaRepository<News, Integer> {
-    List<News> findByThemeOrderByDateOfCreation(String theme, PageRequest pageRequest);
+    List<News> findByTheme(String theme, PageRequest pageRequest);
     List<News> findAllByOrderByDateOfCreation(PageRequest pageRequest);
     Optional<News> findBySlug(String slug);
+
+    List<News> findBySlugContains(String slug, PageRequest pageRequest);
+
+    List<News> findAllByThemeAndSlugContains(String theme, String slug, PageRequest pageRequest);
 
     @Query(value = "Select *\n" +
             "from news d\n" +

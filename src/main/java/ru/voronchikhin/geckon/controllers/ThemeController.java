@@ -18,8 +18,18 @@ public class ThemeController {
 
     @GetMapping("/")
     public List<ReachThemeDTO> all(@RequestParam(value = "page") int page,
-                                   @RequestParam(value = "theme_per_page") int themePerPage){
-        return themeService.findAll(page, themePerPage);
+                                   @RequestParam(value = "theme_per_page") int themePerPage,
+                                   @RequestParam(value = "name", required = false) String name){
+        if(name == null){
+            return themeService.findAll(page, themePerPage);
+        }else{
+            return themeService.findAllBySlug(page, themePerPage, name);
+        }
+    }
+
+    @GetMapping("/{slug}")
+    public ReachThemeDTO findBySlug(@PathVariable("slug") String slug){
+        return themeService.findReachBySlug(slug);
     }
 
     @PostMapping("/new")

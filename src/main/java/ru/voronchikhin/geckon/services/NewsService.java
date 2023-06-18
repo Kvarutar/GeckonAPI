@@ -1,6 +1,7 @@
 package ru.voronchikhin.geckon.services;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +37,8 @@ public class NewsService {
     }
 
     public List<NewsDTO> findAll(int page, int newsPerPage){
-        return newsRepository.findAllByOrderByDateOfCreation(PageRequest.of(page, newsPerPage))
+        return newsRepository.findAll(PageRequest.of(page, newsPerPage,
+                        Sort.by("dateOfCreation").descending()))
                 .stream().map(this::convertNewsToNewsDTO).toList();
     }
 
@@ -50,14 +52,29 @@ public class NewsService {
                 .stream().map(this::convertNewsToNewsDTO).toList();
     }
 
-    public List<NewsDTO> findPagination(int page, int newsPerPage, String theme){
-        return newsRepository.findByThemeOrderByDateOfCreation(theme, PageRequest.of(page, newsPerPage))
-                .stream().map(this::convertNewsToNewsDTO).toList();
+    public List<NewsDTO> findPagination(int page, int newsPerPage, String theme, String name){
+
+        if(name == null){
+            return newsRepository.findByTheme(theme, PageRequest.of(page, newsPerPage,
+                            Sort.by("dateOfCreation").descending()))
+                    .stream().map(this::convertNewsToNewsDTO).toList();
+        }else if (theme == null){
+            return newsRepository.findBySlugContains(name, PageRequest.of(page, newsPerPage,
+                    Sort.by("dateOfCreation").descending())).stream().map(this::convertNewsToNewsDTO).toList();
+        }else{
+            return newsRepository.findAllByThemeAndSlugContains(theme, name, PageRequest.of(page, newsPerPage,
+                    Sort.by("dateOfCreation").descending())).stream().map(this::convertNewsToNewsDTO).toList();
+        }
+
     }
 
     public NewsWithContentDTO findBySlug(String slug){
         Optional<News> foundedNews = newsRepository.findBySlug(slug);
         return foundedNews.map(this::convertNewsToNewsWithContentDTO).orElse(null);
+    }
+
+    public List<TagsDTO> getTags(){
+        return tagsRepository.findAll().stream().map(this::convertTagsToTagsDTO).toList();
     }
 
     @Transactional

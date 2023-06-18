@@ -23,4 +23,14 @@ public class MessageDTO {
     private Integer personId;
 
     private String personName;
+
+    private String themeSlug;
+
+    public MessageDTO(Integer id, String text, Date date, Integer personId, String personName) {
+        this.id = id;
+        this.text = text;
+        this.date = date;
+        this.personId = personId;
+        this.personName = personName;
+    }
 }

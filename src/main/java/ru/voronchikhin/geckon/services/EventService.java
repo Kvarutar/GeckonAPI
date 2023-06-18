@@ -38,17 +38,39 @@ public class EventService {
         return List.of(eventRepository.findAllTowns());
     }
 
-    public List<EventDTO> findAllByTown(int page, int eventsPerPage, Date start, Date end, String town){
-        return eventRepository
-                .findAllByTownAndTimeDateBetweenOrderByTimeDate(town, start, end, PageRequest.of(page, eventsPerPage))
-                .stream().map(this::convertEventToEventDTO).toList();
-    }
+//    public List<EventDTO> findAllByTown(int page, int eventsPerPage, Date start, Date end, String town){
+//        return eventRepository
+//                .findAllByTownAndTimeDateBetweenOrderByTimeDate(town, start, end, PageRequest.of(page, eventsPerPage))
+//                .stream().map(this::convertEventToEventDTO).toList();
+//    }
 
-    public List<EventDTO> findAllBetween(int page, int eventsPerPage, Date start, Date end){
-        List<Event> allEvents = eventRepository.findAllByTimeDateBetweenOrderByTimeDate(start, end,
-                PageRequest.of(page, eventsPerPage));
+    public List<EventDTO> findAllBetween(int page, int eventsPerPage, Date start, Date end, String town, String name){
 
-        return allEvents.stream().map(this::convertEventToEventDTO).toList();
+        if(name == null){
+            if (town == null){
+                List<Event> allEvents = eventRepository.findAllByTimeDateBetweenOrderByTimeDate(start, end,
+                        PageRequest.of(page, eventsPerPage));
+
+                return allEvents.stream().map(this::convertEventToEventDTO).toList();
+            }else{
+                return eventRepository
+                        .findAllByTownAndTimeDateBetweenOrderByTimeDate(town, start, end,
+                                PageRequest.of(page, eventsPerPage))
+                        .stream().map(this::convertEventToEventDTO).toList();
+            }
+        }else{
+            if (town == null){
+                List<Event> allEvents = eventRepository.findAllByTimeDateBetweenAndSlugContainsOrderByTimeDate(start,
+                        end, name, PageRequest.of(page, eventsPerPage));
+
+                return allEvents.stream().map(this::convertEventToEventDTO).toList();
+            }else{
+                return eventRepository
+                        .findAllByTownAndTimeDateBetweenAndSlugContainsOrderByTimeDate(town, start, end, name,
+                                PageRequest.of(page, eventsPerPage))
+                        .stream().map(this::convertEventToEventDTO).toList();
+            }
+        }
     }
 
     @Transactional

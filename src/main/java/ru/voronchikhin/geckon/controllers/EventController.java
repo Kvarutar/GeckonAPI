@@ -26,20 +26,18 @@ public class EventController {
                                         @RequestParam(value = "events_per_page") Integer eventsPerPage,
                                         @RequestParam(value = "start", required = false) String start,
                                         @RequestParam(value = "end", required = false) String end,
-                                        @RequestParam(value = "town", required = false) String town) throws ParseException {
+                                        @RequestParam(value = "town", required = false) String town,
+                                        @RequestParam(value = "name", required = false) String name)
+            throws ParseException {
 
         if(start == null && end == null){
             return eventService.findAll(page, eventsPerPage);
-        }else if (town == null){
-            Date startDate = new SimpleDateFormat("MM/dd/yyyy").parse(start);
-            Date endDate = new SimpleDateFormat("MM/dd/yyyy").parse(end);
-
-            return eventService.findAllBetween(page, eventsPerPage, startDate, endDate);
         }else{
             Date startDate = new SimpleDateFormat("MM/dd/yyyy").parse(start);
             Date endDate = new SimpleDateFormat("MM/dd/yyyy").parse(end);
 
-            return eventService.findAllByTown(page, eventsPerPage, startDate, endDate, town);
+            return eventService.findAllBetween(page, eventsPerPage, startDate, endDate, town, name);
+            //return eventService.findAllBetween(page, eventsPerPage, startDate, endDate);
         }
     }
 

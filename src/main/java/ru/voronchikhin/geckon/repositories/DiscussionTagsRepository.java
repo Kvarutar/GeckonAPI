@@ -14,6 +14,6 @@ import java.util.Set;
 @Repository
 public interface DiscussionTagsRepository extends JpaRepository<DiscussionTags, Integer> {
     Optional<DiscussionTags> findBySlug(String slug);
-    List<DiscussionTags> findAllByOrderByCount();
+    List<DiscussionTags> findAllByDiscussions_Theme_Slug(String slug);
     void deleteBySlug(String slug);
 }

@@ -4,23 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.voronchikhin.geckon.models.Message;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReachThemeDTO {
-    private Integer id;
-
+public class ReachDiscussionDTO {
     private String name;
 
-    private String slug;
+    private String descr;
 
     private Date dateOfCreation;
 
-    private Set<DiscussionDTO> discussions;
+    private Set<DiscussionTagsDTO> tagsList;
+
+    private Set<MessageDTO> messages;
 }

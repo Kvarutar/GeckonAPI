@@ -8,10 +8,7 @@ import ru.voronchikhin.geckon.models.DiscussionTags;
 import ru.voronchikhin.geckon.repositories.DiscussionRepository;
 import ru.voronchikhin.geckon.repositories.DiscussionTagsRepository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,6 +19,26 @@ public class DiscussionTagsService {
     public DiscussionTagsService(DiscussionTagsRepository repository, DiscussionRepository discussionRepository) {
         this.repository = repository;
         this.discussionRepository = discussionRepository;
+    }
+
+    public List<DiscussionTagsDTO> findAllByDiscussionSize(){
+        List<DiscussionTags> res = repository.findAll();
+
+        res.sort(Comparator.comparingInt(a -> a.getDiscussions().size()));
+        if (res.size() > 10){
+            res = res.subList(0, 10);
+        }
+        return res.stream().map(this::convertTagsToTagsDTO).toList();
+    }
+
+    public List<DiscussionTagsDTO> findAllByThemeAndDiscussionSize(String slug){
+        List<DiscussionTags> res = repository.findAllByDiscussions_Theme_Slug(slug);
+
+        res.sort(Comparator.comparingInt(a -> a.getDiscussions().size()));
+        if (res.size() > 10){
+            res = res.subList(0, 10);
+        }
+        return res.stream().map(this::convertTagsToTagsDTO).toList();
     }
 
     public DiscussionTagsDTO findBySlug(String slug){
@@ -70,7 +87,7 @@ public class DiscussionTagsService {
 
     public DiscussionTagsDTO convertTagsToTagsDTO(DiscussionTags discussionTags){
         return new DiscussionTagsDTO(discussionTags.getId(), discussionTags.getName(),
-                discussionTags.getSlug(), discussionTags.getCount());
+                discussionTags.getSlug(), discussionTags.getDiscussions().size());
     }
 
     public DiscussionTags convertTagsDTOToTags(DiscussionTagsDTO discussionTagsDTO){

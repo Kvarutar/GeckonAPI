@@ -10,6 +10,7 @@ import ru.voronchikhin.geckon.models.Discussion;
 import ru.voronchikhin.geckon.models.Message;
 import ru.voronchikhin.geckon.models.Person;
 import ru.voronchikhin.geckon.repositories.MessageRepository;
+import ru.voronchikhin.geckon.repositories.PersonRepository;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
 public class MessageService {
     private final MessageRepository messageRepository;
     private final DiscussionService discussionService;
+    private final PersonRepository personRepository;
 
     public List<MessageDTO> findAllByDiscussion(String slug){
         return messageRepository.findAllByDiscussion_SlugOrderByDate(slug).stream()
@@ -27,7 +29,8 @@ public class MessageService {
 
     @Transactional
     public void save(MessageDTO messageDTO, String slug){
-        Person person = (Person) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //Person person = (Person) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Person person = personRepository.findById(messageDTO.getPersonId()).get();
         Discussion discussion = discussionService.findDiscussionBySlug(slug);
         Message messageToSave = new Message(messageDTO.getText(), messageDTO.getDate(), person, discussion);
 

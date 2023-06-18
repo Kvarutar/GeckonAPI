@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.voronchikhin.geckon.dto.DiscussionDTO;
 import ru.voronchikhin.geckon.dto.NewsDTO;
 import ru.voronchikhin.geckon.dto.NewsWithContentDTO;
+import ru.voronchikhin.geckon.dto.TagsDTO;
 import ru.voronchikhin.geckon.services.NewsService;
 import ru.voronchikhin.geckon.util.ErrorResponse;
 import ru.voronchikhin.geckon.util.NewsAddingException;
@@ -27,12 +28,13 @@ public class NewsController {
     @GetMapping("/")
     public List<NewsDTO> getPaginationNews(@RequestParam(value = "page") Integer page,
                                            @RequestParam(value = "news_per_page") Integer newsPerPage,
-                                           @RequestParam(value = "theme", required = false) String theme){
+                                           @RequestParam(value = "theme", required = false) String theme,
+                                           @RequestParam(value = "name", required = false) String name){
 
-        if (theme == null){
+        if (theme == null && name == null){
             return newsService.findAll(page, newsPerPage);
-        }else{
-            return newsService.findPagination(page, newsPerPage, theme);
+        }else {
+            return newsService.findPagination(page, newsPerPage, theme, name);
         }
 
     }
@@ -42,6 +44,11 @@ public class NewsController {
                               @RequestParam(value = "tags") String[] tags){
 
         return newsService.findByTagsCount(List.of(tags), page, newsPerPage);
+    }
+
+    @GetMapping("/tags")
+    public List<TagsDTO> tags(){
+        return newsService.getTags();
     }
     @GetMapping("/without")
     public List<NewsDTO> without(@RequestParam(value = "page") Integer page,

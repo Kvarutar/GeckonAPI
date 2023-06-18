@@ -34,8 +34,20 @@ public class ThemeService {
                 .map(this::convertThemeToReachThemeDTO).toList();
     }
 
+    public List<ReachThemeDTO> findAllBySlug(int page, int themePerPage, String slug){
+        return themeRepository
+                .findAllBySlugContains(slug, PageRequest.of(page, themePerPage))
+                .stream()
+                .sorted(Comparator.comparingInt(Theme::getDiscussionSize).reversed())
+                .map(this::convertThemeToReachThemeDTO).toList();
+    }
+
     public ThemeDTO findBySlug(String slug){
         return themeRepository.findBySlug(slug).map(this::convertThemeToThemeDTO).orElse(null);
+    }
+
+    public ReachThemeDTO findReachBySlug(String slug){
+        return themeRepository.findBySlug(slug).map(this::convertThemeToReachThemeDTO).orElse(null);
     }
 
     public Theme findThemeBySlug(String slug){
@@ -79,15 +91,16 @@ public class ThemeService {
 
 
         return new ReachThemeDTO(theme.getId(), theme.getName(), theme.getSlug(), theme.getDateOfCreation(),
-                topDiscussions.subList(0, endIndex).stream().map(this::convertDiscussionsToPureDiscussionsDTO)
+                topDiscussions.subList(0, endIndex).stream().map(this::convertDiscussionsToDiscussionsDTO)
                         .collect(Collectors.toSet()));
     }
 
-    public PureDiscussionsDTO convertDiscussionsToPureDiscussionsDTO(Discussion discussion){
+    public DiscussionDTO convertDiscussionsToDiscussionsDTO(Discussion discussion){
         Set<DiscussionTagsDTO> tags = discussion.getDiscussionTags().stream()
                 .map(tagsService::convertTagsToTagsDTO).collect(Collectors.toSet());
 
-        return new PureDiscussionsDTO(discussion.getId(), discussion.getName(), discussion.getSlug(),
-                discussion.getDescr(), discussion.getImgUrl(), discussion.getDateOfCreation(), tags);
+        return new DiscussionDTO(discussion.getId(), discussion.getName(), discussion.getSlug(),
+                discussion.getDescr(), discussion.getImgUrl(), discussion.getDateOfCreation(), tags,
+                discussion.getTheme().getSlug(), discussion.getMessages().size());
     }
 }

@@ -1,12 +1,16 @@
 package ru.voronchikhin.geckon.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.voronchikhin.geckon.dto.DiscussionDTO;
 import ru.voronchikhin.geckon.dto.DiscussionTagsDTO;
+import ru.voronchikhin.geckon.dto.MessageDTO;
+import ru.voronchikhin.geckon.dto.ReachDiscussionDTO;
 import ru.voronchikhin.geckon.models.Discussion;
 import ru.voronchikhin.geckon.models.DiscussionTags;
+import ru.voronchikhin.geckon.models.Message;
 import ru.voronchikhin.geckon.models.Theme;
 import ru.voronchikhin.geckon.repositories.DiscussionRepository;
 
@@ -15,52 +19,84 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class DiscussionService {
     private final DiscussionRepository discussionRepository;
     private final DiscussionTagsService discussionTagsService;
     private final ThemeService themeService;
 
-    public DiscussionService(DiscussionRepository discussionRepository, DiscussionTagsService discussionTagsService,
-                             ThemeService themeService) {
-        this.discussionRepository = discussionRepository;
-        this.discussionTagsService = discussionTagsService;
-        this.themeService = themeService;
+    public List<DiscussionDTO> findAll(int page, int discussionPerPage, String name){
+//        if (type != null ){
+//            return findHotOrNew(page, discussionPerPage, name, type);
+//        }else{
+//            if (name == null){
+//                return discussionRepository.findAll(PageRequest.of(page, discussionPerPage))
+//                        .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+//            }else{
+//                return discussionRepository.findAllBySlugContains(name, PageRequest.of(page, discussionPerPage))
+//                        .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+//            }
+//        }
+
+        if (name == null){
+            return discussionRepository.findAll(PageRequest.of(page, discussionPerPage))
+                    .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+        }else{
+            return discussionRepository.findAllBySlugContains(name, PageRequest.of(page, discussionPerPage))
+                    .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+        }
     }
 
-    public List<DiscussionDTO> findAll(int page, int discussionPerPage){
-        return discussionRepository.findAll(PageRequest.of(page, discussionPerPage))
-                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+    private List<DiscussionDTO> findHotOrNew(int page, int discussionPerPage, String name, String type, String themeSlug){
+        if (type.equals("hot")){
+            if (name == null){
+                return discussionRepository.findAllByTheme_SlugOrderByMessagesAsc(themeSlug,
+                                PageRequest.of(page, discussionPerPage))
+                        .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+            }else{
+                return discussionRepository.findAllByTheme_SlugAndSlugContainsOrderByMessagesAsc(themeSlug, name,
+                                PageRequest.of(page, discussionPerPage))
+                        .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+            }
+        }else {
+            if (name == null){
+                return discussionRepository.findAllByTheme_SlugOrderByDateOfCreation(themeSlug,
+                                PageRequest.of(page, discussionPerPage))
+                        .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+            }else{
+                return discussionRepository.findAllByTheme_SlugAndSlugContainsOrderByDateOfCreation(themeSlug, name,
+                                PageRequest.of(page, discussionPerPage))
+                        .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+            }
+        }
+    }
+
+    public List<DiscussionDTO> findByTheme(String slug, int page, int discussionPerPage, String type, String name){
+        if (type == null){
+            if (name == null){
+                return discussionRepository.findAllByTheme_Slug(slug, PageRequest.of(page, discussionPerPage))
+                        .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+            } else {
+                return discussionRepository.findAllByTheme_SlugAndSlugContains(slug, name,
+                                PageRequest.of(page, discussionPerPage))
+                        .stream().map(this::convertDiscussionToDiscussionDTO).toList();
+            }
+        }else{
+            return findHotOrNew(page, discussionPerPage, name, type, slug);
+        }
     }
 
     public List<DiscussionDTO> findAllByNotTags(List<String> tags, Integer page, Integer discussionPerPage){
-
         return discussionRepository.findWithoutTagList(tags, PageRequest.of(page, discussionPerPage))
                 .stream().map(this::convertDiscussionToDiscussionDTO).toList();
     }
 
-    public List<DiscussionDTO> findNew(int page, int discussionPerPage){
-        return discussionRepository.findAllByOrderByDateOfCreation(PageRequest.of(page, discussionPerPage))
-                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
-    }
-
-    public List<DiscussionDTO> findHot(int page, int discussionPerPage){
-        return discussionRepository.findAllByOrderByMessagesAsc(PageRequest.of(page, discussionPerPage))
-                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
-    }
-
-    public List<DiscussionDTO> findByTheme(String slug, int page, int discussionPerPage){
-        return discussionRepository.findAllByTheme_Slug(slug, PageRequest.of(page, discussionPerPage))
-                .stream().map(this::convertDiscussionToDiscussionDTO).toList();
-    }
-
-    public List<DiscussionDTO> findNewByTheme(String slug, int page, int discussionPerPage){
-        return discussionRepository.findAllByTheme_SlugOrderByDateOfCreation(slug,
-                        PageRequest.of(page, discussionPerPage))
-                .stream().map(this::convertDiscussionToDiscussionDTO).collect(Collectors.toList());
-    }
-
     public DiscussionDTO findBySlug(String slug){
         return discussionRepository.findBySlug(slug).map(this::convertDiscussionToDiscussionDTO).orElse(null);
+    }
+
+    public ReachDiscussionDTO findWithMessages(String slug){
+        return discussionRepository.findBySlug(slug).map(this::convertDiscussionToReachDiscussionDTO).orElse(null);
     }
 
     public Discussion findDiscussionBySlug(String slug){
@@ -123,6 +159,21 @@ public class DiscussionService {
         return discussionToSave;
     }
 
+    private ReachDiscussionDTO convertDiscussionToReachDiscussionDTO(Discussion discussion){
+        Set<DiscussionTagsDTO> tags = discussion.getDiscussionTags().stream()
+                .map(discussionTagsService::convertTagsToTagsDTO).collect(Collectors.toSet());
+
+        Set<MessageDTO> messages = discussion.getMessages().stream().map(this::convertMessageToMessageDTO)
+                .collect(Collectors.toSet());
+
+        return new ReachDiscussionDTO(discussion.getName(), discussion.getDescr(), discussion.getDateOfCreation(),
+                tags, messages);
+    }
+
+    private MessageDTO convertMessageToMessageDTO(Message message){
+        return new MessageDTO(message.getId(), message.getText(), message.getDate(), message.getSender().getId(),
+                message.getSender().getName());
+    }
     /*public Discussion convertPureDiscussionsDTOToDiscussions(PureDiscussionsDTO pureDiscussionsDTO){
         return
     }*/
