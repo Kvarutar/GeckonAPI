@@ -8,4 +8,6 @@ ARG JAR_FILE=build/libs/*.jar
 
 COPY ${JAR_FILE} app.jar
 
+ENV _JAVA_OPTIONS="-XX:MaxRAM=70m"
+
 ENTRYPOINT ["java","-jar","/app.jar"]

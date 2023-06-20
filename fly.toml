@@ -1,0 +1,14 @@
+# fly.toml app configuration file generated for geckon-api on 2023-06-20T02:40:16+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "geckon-api"
+primary_region = "ams"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
