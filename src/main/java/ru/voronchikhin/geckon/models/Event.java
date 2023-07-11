@@ -18,17 +18,17 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "url")
+    @Column(name = "url", length = 1024)
     private String url;
-    @Column(name = "descr")
+    @Column(name = "descr", length = 1024)
     private String descr;
-    @Column(name = "title")
+    @Column(name = "title", length = 1024)
     private String title;
-    @Column(name = "img_url")
+    @Column(name = "img_url", length = 1024)
     private String imgUrl;
     @Column(name = "time_date")
     private Date timeDate;
-    @Column(name = "address")
+    @Column(name = "address", length = 1024)
     private String address;
     @Column(name = "people_count")
     private String peopleCount;
@@ -36,9 +36,10 @@ public class Event {
     private String town;
     @Column(name = "metro")
     private String metro;
-    @Column(name = "slug")
+    @Column(name = "slug", length = 1024)
     private String slug;
     @ManyToMany
+    @ToString.Exclude
     Set<Person> liked;
 
     //getters and setters, hashcode and equals

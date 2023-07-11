@@ -63,10 +63,8 @@ public class NewsController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<HttpStatus> create(@RequestParam("model")  String model,
-                                             @RequestParam("files") MultipartFile[] files) throws JsonProcessingException {
-        NewsWithContentDTO newsWithContentDTO = new ObjectMapper().readValue(model, NewsWithContentDTO.class);
-        newsService.save(newsWithContentDTO, files);
+    public ResponseEntity<HttpStatus> create(@RequestBody NewsWithContentDTO newsWithContentDTO) {
+        newsService.save(newsWithContentDTO);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

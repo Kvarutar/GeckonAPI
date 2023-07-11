@@ -30,7 +30,6 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<AuthenticationResponse> signin(@RequestBody AuthenticationRequest request)
             throws AuthException {
         return ResponseEntity.ok(authService.authenticate(request));

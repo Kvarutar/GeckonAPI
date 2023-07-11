@@ -19,10 +19,10 @@ public class NewsContent {
     @Column(name = "type")
     private String type;
 
-    @Column(name = "text")
+    @Column(name = "text", length = 1024)
     private String text;
 
-    @Column(name = "url")
+    @Column(name = "url", length = 1024)
     private String url;
 
     @ManyToOne

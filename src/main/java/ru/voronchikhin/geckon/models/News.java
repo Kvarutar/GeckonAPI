@@ -24,15 +24,15 @@ public class News {
     private String author;
     @Column(name = "date_of_creation")
     private Date dateOfCreation;
-    @Column(name = "title")
+    @Column(name = "title", length = 1024)
     private String title;
     @Column(name = "duration")
     private String duration;
     @Column(name = "theme")
     private String theme;
-    @Column(name = "main_url")
+    @Column(name = "main_url", length = 1024)
     private String mainUrl;
-    @Column(name = "slug")
+    @Column(name = "slug", length = 1024)
     private String slug;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
